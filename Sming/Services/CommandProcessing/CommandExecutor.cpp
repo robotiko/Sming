@@ -20,6 +20,12 @@ CommandExecutor::CommandExecutor(Stream* reqStream)
 	commandOutput->printf("Welcome to the Stream Command executor\r\n");
 }
 
+CommandExecutor::CommandExecutor(WebSocket* reqSocket)
+{
+	commandOutput = new CommandOutput(reqSocket);
+	reqSocket->sendString("Welcome to the Websocket Command Executor");
+}
+
 CommandExecutor::~CommandExecutor()
 {
 }
@@ -36,6 +42,19 @@ int CommandExecutor::executorReceive(char *recvData, int recvSize)
 		}
 	}
 	return receiveReturn;
+}
+
+int CommandExecutor::executorReceive(String recvString)
+{
+	int receiveReturn = 0;
+	for (int recvIdx=0;recvIdx<recvString.length();recvIdx++)
+	{
+		receiveReturn = executorReceive(recvString[recvIdx]);
+		if (receiveReturn)
+		{
+			break;
+		}
+	}
 }
 
 int CommandExecutor::executorReceive(char recvChar)
